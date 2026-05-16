@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Terrasa — boutique coastal retreat на березі Чорного моря. Уютні номери, теплий світ, закати та морський бриз. Забронюйте зараз." />
+  <meta name="keywords" content="Terrasa, boutique hotel, Black Sea, Фонтанка, Одеса, відпочинок" />
+  <title>Terrasa — Boutique Coastal Retreat</title>
+
+  <!-- Google Fonts (premium-looking, free) -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,600&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Favicon (inline SVG data URI) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23F4E6D8'/%3E%3Cpath d='M20 60 C35 40, 65 40, 80 60' stroke='%23123A5A' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='30' cy='45' r='3' fill='%23F29E2E'/%3E%3C/svg%3E">
+
+  <style>
+    :root{
+      --sand:#F4E6D8;
+      --deep-sea:#0F2B3A;
+      --amber:#F29E2E;
+      --soft-white:#FBFBFB;
+      --max-width:1200px;
+      --transition: 450ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, rgba(8,18,28,1) 0%, rgba(12,30,40,1) 60%, rgba(20,40,55,1) 100%);
+      color:var(--soft-white);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+
+    /* Loading */
+    #loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(6,12,18,0.9), rgba(6,12,18,0.6));z-index:9999;backdrop-filter:blur(6px)}
+    .loader{width:84px;height:84px;border-radius:50%;background:conic-gradient(from 180deg at 50% 50%, #F29E2E, #F4E6D8, rgba(255,255,255,0.06));animation:spin 2.6s linear infinite;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #loading.hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .6s, visibility .6s}
+
+    /* Header */
+    header{position:fixed;top:20px;left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:var(--max-width);z-index:60;display:flex;align-items:center;justify-content:space-between;pointer-events:none}
+    .brand{display:flex;align-items:center;gap:12px;pointer-events:auto;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:10px 14px;border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 6px 20px rgba(2,8,12,0.6)}
+    .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--sand),var(--amber));display:flex;align-items:center;justify-content:center;color:var(--deep-sea);font-family:"Playfair Display", serif;font-weight:600;font-size:18px}
+    .brand h1{margin:0;font-size:14px;line-height:1;color:var(--soft-white);font-weight:600}
+    .brand p{margin:0;font-size:11px;color:rgba(255,255,255,0.7)}
+    .controls{display:flex;align-items:center;gap:10px;pointer-events:auto}
+    .lang-switch{display:flex;gap:8px}
+    .lang-switch button{border:0;background:transparent;color:rgba(255,255,255,0.85);padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer}
+    .lang-switch button.active{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));backdrop-filter:blur(6px)}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,var(--amber),#F6C88A);color:var(--deep-sea);font-weight:700;text-decoration:none;box-shadow:0 10px 30px rgba(0,0,0,0.35);cursor:pointer;border:0}
+    .btn.ghost{background:transparent;color:var(--soft-white);border:1px solid rgba(255,255,255,0.06);box-shadow:none}
+
+    /* Hero */
+    .hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:0 20px;overflow:hidden}
+    /* HERO BACKGROUND: uses hotel44.jpg as main cinematic background (file must be in same folder) */
+    .hero-bg{position:absolute;inset:0;background:
+      linear-gradient(180deg, rgba(6,18,28,0.12), rgba(6,18,28,0.45)),
+      url('hotel44.jpg') center/cover no-repeat;
+      transform:translateZ(0);filter:contrast(1.02) saturate(1.05) brightness(.95);transition:transform .9s ease}
+    .hero-bg::before{content:"";position:absolute;inset:0;background:radial-gradient(1200px 600px at 10% 20%, rgba(242,158,46,0.04), transparent 10%);mix-blend-mode:overlay}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.35));pointer-events:none}
+    #ambientCanvas{position:absolute;inset:0;z-index:2;pointer-events:none}
+
+    .hero-inner{position:relative;z-index:10;max-width:var(--max-width);width:100%;display:flex;align-items:center;gap:40px;padding:120px 20px}
+    .hero-copy{flex:1;max-width:720px}
+    .eyebrow{font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px}
+    .title{font-family:"Playfair Display", serif;font-size:56px;line-height:1.02;margin:0 0 18px;color:var(--soft-white);text-shadow:0 10px 30px rgba(2,8,12,0.6);transform:translateY(10px);opacity:0;transition:transform .9s cubic-bezier(.2,.9,.2,1), opacity .9s}
+    .title.revealed{transform:none;opacity:1}
+    .subtitle{font-size:18px;color:rgba(255,255,255,0.85);margin-bottom:26px;max-width:60%}
+    .hero-actions{display:flex;gap:14px;align-items:center}
+    .hero-card{width:420px;border-radius:16px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));box-shadow:0 20px 60px rgba(2,8,12,0.6);backdrop-filter: blur(8px);color:var(--soft-white);border:1px solid rgba(255,255,255,0.04)}
+    .hero-card h3{margin:0 0 8px;font-family:"Playfair Display", serif;font-size:20px}
+    .hero-card p{margin:0 0 12px;color:rgba(255,255,255,0.8);font-size:14px}
+
+    .film-bar{position:absolute;left:0;right:0;bottom:0;height:120px;z-index:5;background:linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,0.45));pointer-events:none}
+
+    main{position:relative;z-index:3}
+
+    section{padding:80px 20px;max-width:var(--max-width);margin:0 auto;display:block}
+    .section-title{display:flex;align-items:baseline;gap:18px;margin-bottom:28px}
+    .section-title h2{font-family:"Playfair Display", serif;margin:0;font-size:28px}
+    .section-title p{margin:0;color:rgba(255,255,255,0.7)}
+
+    /* Gallery masonry-like */
+    .gallery{column-count:3;column-gap:18px;transition:all .6s ease}
+    .photo{break-inside:avoid;margin-bottom:18px;border-radius:12px;overflow:hidden;position:relative;box-shadow:0 18px 40px rgba(2,8,12,0.6);transform:translateY(18px);opacity:0;transition:transform .9s var(--transition), opacity .9s var(--transition)}
+    .photo.revealed{transform:none;opacity:1}
+    .photo img{width:100%;height:auto;display:block;filter:contrast(1.02) saturate(1.05) brightness(.98) sepia(.06);transform-origin:center center;transition:transform .6s ease, filter .6s ease}
+    .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.18));mix-blend-mode:multiply}
+    .photo:hover img{transform:scale(1.03);filter:contrast(1.06) saturate(1.08) brightness(1.02) sepia(.08)}
+    .photo .caption{position:absolute;left:14px;bottom:14px;color:var(--soft-white);font-weight:600;font-size:13px;text-shadow:0 6px 18px rgba(0,0,0,0.6);background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));padding:8px 12px;border-radius:10px;backdrop-filter: blur(6px)}
+
+    .about{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:start}
+    .about p{color:rgba(255,255,255,0.88);line-height:1.7;font-size:16px}
+    .card{border-radius:14px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));box-shadow:0 18px 40px rgba(2,8,12,0.6);backdrop-filter: blur(8px)}
+
+    .map-wrap{border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(2,8,12,0.6);border:1px solid rgba(255,255,255,0.04)}
+    .map-wrap iframe{width:100%;height:360px;border:0;display:block;filter:grayscale(.02) contrast(.95) saturate(.95)}
+
+    .contacts{display:flex;gap:18px;flex-wrap:wrap}
+    .contact-card{flex:1;min-width:220px;border-radius:12px;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));box-shadow:0 12px 30px rgba(2,8,12,0.5);backdrop-filter: blur(8px)}
+    .glass-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.06);backdrop-filter: blur(6px);cursor:pointer;text-decoration:none;color:var(--soft-white);transition:transform .25s ease}
+    .glass-btn:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(2,8,12,0.5)}
+
+    footer{padding:40px 20px;background:linear-gradient(180deg, rgba(6,12,18,0.6), rgba(6,12,18,0.9));margin-top:40px}
+    .footer-inner{max-width:var(--max-width);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .footer-inner p{margin:0;color:rgba(255,255,255,0.6)}
+
+    @media (max-width:1000px){
+      .hero-inner{flex-direction:column;align-items:flex-start;padding:80px 20px}
+      .about{grid-template-columns:1fr}
+      .gallery{column-count:2}
+      .hero-card{width:100%}
+    }
+    @media (max-width:640px){
+      .gallery{column-count:1}
+      header{left:12px;right:12px;transform:none;width:auto}
+      .brand h1{font-size:13px}
+      .title{font-size:36px}
+      .subtitle{max-width:100%}
+      .hero-inner{padding:60px 14px}
+      .hero-card{padding:14px}
+    }
+
+    a{color:inherit}
+    .muted{color:rgba(255,255,255,0.65)}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div id="loading" aria-hidden="false">
+    <div class="loader" role="img" aria-label="Loading"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand" role="banner">
+      <div class="logo" aria-hidden="true">T</div>
+      <div>
+        <h1 id="brand-name">Terrasa</h1>
+        <p id="brand-tag">Boutique Coastal Retreat</p>
+      </div>
+    </div>
+
+    <div class="controls" role="navigation" aria-label="Top controls">
+      <div class="lang-switch" aria-hidden="false">
+        <button id="lang-uk" class="active" aria-pressed="true">Українська</button>
+        <button id="lang-en" aria-pressed="false">English</button>
+      </div>
+      <div>
+        <a class="btn" id="bookTop" href="#contacts">Забронювати</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="home" aria-label="Hero">
+    <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+    <canvas id="ambientCanvas"></canvas>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow" data-i18n="eyebrow">Terrasa — seaside boutique</div>
+        <h2 class="title" id="heroTitle">Terrasa — Теплий відпочинок на березі Чорного моря</h2>
+        <p class="subtitle" id="heroSubtitle">Місце, де закати пахнуть морем, а кожна кімната — як обійми теплого світла. Відчуйте атмосферу спокою та преміального сервісу.</p>
+
+        <div class="hero-actions" style="margin-top:18px">
+          <a class="btn" id="bookNow" href="#contacts" aria-label="Book now">Забронювати</a>
+          <a class="btn ghost" href="#gallery" aria-label="Gallery">Галерея</a>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Booking card">
+        <h3 id="cardTitle">Забронюйте номер</h3>
+        <p id="cardText">Номери з видом на море, теплий інтер'єр та сніданок з локальними смаколиками.</p>
+        <div class="book" style="margin-top:12px">
+          <a class="btn" href="#contacts" id="bookCard">Забронювати</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="film-bar" aria-hidden="true"></div>
+  </section>
+
+  <main>
+    <!-- Gallery -->
+    <section id="gallery" aria-labelledby="galleryTitle">
+      <div class="section-title">
+        <h2 id="galleryTitle">Галерея</h2>
+        <p id="gallerySub">Підбірка атмосферних кадрів — ретушована, тепла, кінематографічна.</p>
+      </div>
+
+      <div class="gallery" id="galleryGrid" aria-live="polite">
+        <!-- User photos placed in same folder as index.html -->
+        <figure class="photo" data-src="hotel11.jpg">
+          <img src="hotel11.jpg" alt="Terrasa room 1" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption1">Затишний номер — Terrasa</figcaption>
+        </figure>
+
+        <figure class="photo" data-src="hotel22.jpg">
+          <img src="hotel22.jpg" alt="Terrasa room 2" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption2">Веранда біля моря</figcaption>
+        </figure>
+
+        <figure class="photo" data-src="hotel33.jpg">
+          <img src="hotel33.jpg" alt="Terrasa room 3" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption5">Номер з видом</figcaption>
+        </figure>
+
+        <figure class="photo" data-src="hotel44.jpg">
+          <img src="hotel44.jpg" alt="Terrasa main view" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption6">Головний вид</figcaption>
+        </figure>
+
+        <!-- Sunrise image for "Заходи сонця над Чорним морем" -->
+        <figure class="photo" data-src="sunrise.jpg">
+          <img src="sunrise.jpg" alt="Sunrise over the Black Sea" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption3">Заходи сонця над Чорним морем</figcaption>
+        </figure>
+
+        <!-- City image for "Теплий мінімалізм" -->
+        <figure class="photo" data-src="city.jpg">
+          <img src="city.jpg" alt="Warm minimalism city" loading="lazy" />
+          <figcaption class="caption" data-i18n="caption4">Теплий мінімалізм</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" aria-labelledby="aboutTitle">
+      <div class="section-title">
+        <h2 id="aboutTitle">Про нас</h2>
+        <p id="aboutSub">Тихий куточок біля моря, де кожна деталь створена для вашого комфорту.</p>
+      </div>
+
+      <div class="about">
+        <div>
+          <p id="aboutText">
+            Terrasa — це невеликий boutique hotel на березі Чорного моря, де поєднуються теплий мінімалізм та увага до деталей.
+            Наші номери наповнені м'яким світлом, натуральними текстурами та ретельно підібраними елементами інтер'єру.
+            Розташування у Фонтанці дарує тихі ранки з морським бризом, довгі вечірні прогулянки та неймовірні заходи сонця.
+            Ми створили простір, де можна відпочити душею: сніданки з локальними продуктами, персонал, що дбає про ваш комфорт, і атмосфера, яка запрошує залишитися ще на одну ніч.
+          </p>
+
+          <p style="margin-top:18px;color:rgba(255,255,255,0.8)" id="aboutText2">
+            Кожна деталь — від текстилю до освітлення — продумана, щоб подарувати відчуття дому далеко від дому.
+            Приїжджайте за спокоєм, натхненням і тими моментами, які залишаються в пам'яті назавжди.
+          </p>
+        </div>
+
+        <aside class="card">
+          <h3 data-i18n="roomsTitle">Номери</h3>
+          <p data-i18n="roomsText">У нас є затишні одномісні та двомісні номери, а також сімейні апартаменти з видом на море. Кожен номер обладнаний кондиціонером, комфортними ліжками та швидким Wi‑Fi.</p>
+
+          <div style="margin-top:14px">
+            <a class="glass-btn" href="#contacts" id="bookCard2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12 1.05.38 2.07.76 3.03a2 2 0 0 1-.45 2.11L9.91 10.09a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45c.96.38 1.98.64 3.03.76A2 2 0 0 1 22 16.92z" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="phoneText">+380 67 609 9733</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Location -->
+    <section id="location" aria-labelledby="locationTitle">
+      <div class="section-title">
+        <h2 id="locationTitle">Локація</h2>
+        <p id="locationSub">вулиця Перемоги, 38, Фонтанка, Одеська область, 67571</p>
+      </div>
+
+      <div class="map-wrap" role="region" aria-label="Map">
+        <iframe title="Terrasa location" src="https://www.google.com/maps?q=вулиця+Перемоги+38+Фонтанка+Одеська+область+67571&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" aria-labelledby="contactsTitle">
+      <div class="section-title">
+        <h2 id="contactsTitle">Контакти</h2>
+        <p id="contactsSub">Зв'яжіться з нами для бронювання або запитань.</p>
+      </div>
+
+      <div class="contacts">
+        <div class="contact-card">
+          <h3 class="muted" data-i18n="contactPhone">Телефон</h3>
+          <p style="margin:8px 0 14px;font-size:18px;font-weight:700">+380 67 609 9733</p>
+          <a class="glass-btn" href="tel:+380676099733" aria-label="Call">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12 1.05.38 2.07.76 3.03a2 2 0 0 1-.45 2.11L9.91 10.09a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45c.96.38 1.98.64 3.03.76A2 2 0 0 1 22 16.92z" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Зателефонувати</span>
+          </a>
+        </div>
+
+        <div class="contact-card">
+          <h3 class="muted">Месенджери</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+            <a class="glass-btn" href="https://t.me/+380676099733" target="_blank" rel="noopener" aria-label="Telegram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 2L2 12.5l5.5 2.1L9 22l3-2 6.5 3L22 2z" fill="white" opacity="0.95"/></svg>
+              <span>Telegram</span>
+            </a>
+
+            <a class="glass-btn" href="https://wa.me/380676099733" target="_blank" rel="noopener" aria-label="WhatsApp">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 12.1c0 4.9-4 8.9-8.9 8.9-1.6 0-3.1-.4-4.4-1.1L3 21l1.2-5.1C3.6 14.1 3 13 3 11.9 3 7 7 3 11.9 3S21 7 21 11.9z" fill="white" opacity="0.95"/></svg>
+              <span>WhatsApp</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <h3 class="muted">Адреса</h3>
+          <p style="margin:8px 0 14px">вулиця Перемоги, 38, Фонтанка, Одеська область, 67571</p>
+          <a class="glass-btn" href="https://www.google.com/maps/search/?api=1&query=вулиця+Перемоги+38+Фонтанка+Одеська+область+67571" target="_blank" rel="noopener">Відкрити в Google Maps</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <p>&copy; <span id="year"></span> Terrasa — Boutique Coastal Retreat</p>
+      <p class="muted">Designed & developed with care • Warm minimalism • Black Sea</p>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      // Hide loader
+      setTimeout(()=>document.getElementById('loading').classList.add('hidden'), 700);
+
+      // Year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Translations
+      const translations = {
+        uk: {
+          eyebrow: "Terrasa — seaside boutique",
+          heroTitle: "Terrasa — Теплий відпочинок на березі Чорного моря",
+          heroSubtitle: "Місце, де закати пахнуть морем, а кожна кімната — як обійми теплого світла. Відчуйте атмосферу спокою та преміального сервісу.",
+          cardTitle: "Забронюйте номер",
+          cardText: "Номери з видом на море, теплий інтер'єр та сніданок з локальними смаколиками.",
+          galleryTitle: "Галерея",
+          gallerySub: "Підбірка атмосферних кадрів — ретушована, тепла, кінематографічна.",
+          caption1: "Затишний номер — Terrasa",
+          caption2: "Веранда біля моря",
+          caption3: "Заходи сонця над Чорним морем",
+          caption4: "Теплий мінімалізм",
+          caption5: "Номер з видом",
+          caption6: "Головний вид",
+          aboutTitle: "Про нас",
+          aboutSub: "Тихий куточок біля моря, де кожна деталь створена для вашого комфорту.",
+          aboutText: "Terrasa — це невеликий boutique hotel на березі Чорного моря, де поєднуються теплий мінімалізм та увага до деталей. Наші номери наповнені м'яким світлом, натуральними текстурами та ретельно підібраними елементами інтер'єру. Розташування у Фонтанці дарує тихі ранки з морським бризом, довгі вечірні прогулянки та неймовірні заходи сонця. Ми створили простір, де можна відпочити душею: сніданки з локальними продуктами, персонал, що дбає про ваш комфорт, і атмосфера, яка запрошує залишитися ще на одну ніч.",
+          aboutText2: "Кожна деталь — від текстилю до освітлення — продумана, щоб подарувати відчуття дому далеко від дому. Приїжджайте за спокоєм, натхненням і тими моментами, які залишаються в пам'яті назавжди.",
+          roomsTitle: "Номери",
+          roomsText: "У нас є затишні одномісні та двомісні номери, а також сімейні апартаменти з видом на море. Кожен номер обладнаний кондиціонером, комфортними ліжками та швидким Wi‑Fi.",
+          contactPhone: "Телефон"
+        },
+        en: {
+          eyebrow: "Terrasa — seaside boutique",
+          heroTitle: "Terrasa — Warm coastal retreat on the Black Sea",
+          heroSubtitle: "A place where sunsets smell of salt and every room feels like a warm embrace. Experience calm, light and premium hospitality.",
+          cardTitle: "Book a room",
+          cardText: "Rooms with sea views, warm interiors and breakfast with local flavors.",
+          galleryTitle: "Gallery",
+          gallerySub: "A curated selection of cinematic, warm and retouched images.",
+          caption1: "Cozy room — Terrasa",
+          caption2: "Veranda by the sea",
+          caption3: "Sunset over the Black Sea",
+          caption4: "Warm minimalism",
+          caption5: "Room with a view",
+          caption6: "Main view",
+          aboutTitle: "About",
+          aboutSub: "A quiet corner by the sea where every detail is crafted for your comfort.",
+          aboutText: "Terrasa is a small boutique hotel on the Black Sea coast blending warm minimalism with attention to detail. Our rooms are filled with soft light, natural textures and carefully chosen furnishings. Located in Fontanka, mornings bring sea breeze, long evening walks and unforgettable sunsets. We created a space to rest the soul: breakfasts with local produce, staff who care about your comfort, and an atmosphere that invites you to stay one more night.",
+          aboutText2: "Every detail — from textiles to lighting — is designed to give a sense of home away from home. Come for calm, inspiration and moments that stay with you.",
+          roomsTitle: "Rooms",
+          roomsText: "We offer cozy single and double rooms, plus family suites with sea views. Each room includes AC, comfortable beds and fast Wi‑Fi.",
+          contactPhone: "Phone"
+        }
+      };
+
+      function setLanguage(lang){
+        const t = translations[lang];
+        if(!t) return;
+        document.querySelector('[data-i18n="eyebrow"]').textContent = t.eyebrow;
+        document.getElementById('heroTitle').textContent = t.heroTitle;
+        document.getElementById('heroSubtitle').textContent = t.heroSubtitle;
+        document.getElementById('cardTitle').textContent = t.cardTitle;
+        document.getElementById('cardText').textContent = t.cardText;
+        document.getElementById('galleryTitle').textContent = t.galleryTitle;
+        document.getElementById('gallerySub').textContent = t.gallerySub;
+        // captions
+        const caps = document.querySelectorAll('.caption');
+        if(caps[0]) caps[0].textContent = t.caption1;
+        if(caps[1]) caps[1].textContent = t.caption2;
+        if(caps[2]) caps[2].textContent = t.caption5; // hotel33
+        if(caps[3]) caps[3].textContent = t.caption6; // hotel44
+        if(caps[4]) caps[4].textContent = t.caption3; // sunrise
+        if(caps[5]) caps[5].textContent = t.caption4; // city
+        document.getElementById('aboutTitle').textContent = t.aboutTitle;
+        document.getElementById('aboutSub').textContent = t.aboutSub;
+        document.getElementById('aboutText').textContent = t.aboutText;
+        document.getElementById('aboutText2').textContent = t.aboutText2;
+        document.querySelector('[data-i18n="roomsTitle"]').textContent = t.roomsTitle;
+        document.querySelector('[data-i18n="roomsText"]').textContent = t.roomsText;
+        document.getElementById('phoneText').textContent = "+380 67 609 9733";
+      }
+
+      // Language buttons
+      const btnUk = document.getElementById('lang-uk');
+      const btnEn = document.getElementById('lang-en');
+      btnUk.addEventListener('click', ()=>{ btnUk.classList.add('active'); btnEn.classList.remove('active'); btnUk.setAttribute('aria-pressed','true'); btnEn.setAttribute('aria-pressed','false'); setLanguage('uk'); document.documentElement.lang='uk'; });
+      btnEn.addEventListener('click', ()=>{ btnEn.classList.add('active'); btnUk.classList.remove('active'); btnEn.setAttribute('aria-pressed','true'); btnUk.setAttribute('aria-pressed','false'); setLanguage('en'); document.documentElement.lang='en'; });
+
+      setLanguage('uk');
+
+      // Parallax on scroll
+      const heroBg = document.getElementById('heroBg');
+      window.addEventListener('scroll', function(){ const sc = window.scrollY; heroBg.style.transform = 'translateY(' + (sc * 0.12) + 'px) scale(1.02)'; }, {passive:true});
+
+      // Reveal animations
+      const revealObserver = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+          if(entry.isIntersecting){ entry.target.classList.add('revealed'); revealObserver.unobserve(entry.target); }
+        });
+      }, {threshold:0.12});
+      document.querySelectorAll('.title, .photo, .hero-card, .about p, .map-wrap, .contact-card').forEach(el=>revealObserver.observe(el));
+      setTimeout(()=>document.querySelector('.title').classList.add('revealed'), 600);
+
+      // Gallery hover micro-parallax
+      document.querySelectorAll('.photo').forEach(photo=>{
+        photo.addEventListener('mousemove', (e)=>{
+          const img = photo.querySelector('img');
+          const rect = photo.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          img.style.transform = `translate(${x*6}px, ${y*6}px) scale(1.03)`;
+        });
+        photo.addEventListener('mouseleave', ()=>{ const img = photo.querySelector('img'); img.style.transform = 'translate(0,0) scale(1)'; });
+      });
+
+      // Ambient canvas (soft floating particles)
+      const canvas = document.getElementById('ambientCanvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, particles=[];
+      function resizeCanvas(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; initParticles(); }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+      function initParticles(){
+        particles = [];
+        const count = Math.round((W*H)/90000);
+        for(let i=0;i<count;i++){
+          particles.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2.2 + 0.6, vx: (Math.random()-0.5)*0.2, vy: - (Math.random()*0.3 + 0.08), alpha: Math.random()*0.6 + 0.12 });
+        }
+      }
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        particles.forEach(p=>{
+          p.x += p.vx; p.y += p.vy;
+          if(p.y < -10){ p.y = H + 10; p.x = Math.random()*W; }
+          if(p.x < -20) p.x = W + 20;
+          if(p.x > W + 20) p.x = -20;
+          ctx.beginPath();
+          ctx.fillStyle = 'rgba(255,255,255,'+ (p.alpha*0.12) +')';
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      draw();
+
+      // Masonry reveal after images load
+      const imgs = document.querySelectorAll('.gallery img');
+      let loaded = 0;
+      imgs.forEach(img=>{
+        if(img.complete) loaded++;
+        else img.addEventListener('load', ()=>{ loaded++; if(loaded===imgs.length) layoutReady(); });
+      });
+      if(loaded===imgs.length) layoutReady();
+      function layoutReady(){ document.querySelectorAll('.photo').forEach((p,i)=>setTimeout(()=>p.classList.add('revealed'), i*120)); }
+
+      // Smooth anchor offset for fixed header
+      document.querySelectorAll('a[href^="#"]').forEach(a=>{
+        a.addEventListener('click', function(e){
+          const target = document.querySelector(this.getAttribute('href'));
+          if(target){ e.preventDefault(); const y = target.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({top:y, behavior:'smooth'}); }
+        });
+      });
+
+      // Copy phone on click (desktop convenience)
+      document.querySelectorAll('.glass-btn[href^="tel:"]').forEach(btn=>{
+        btn.addEventListener('click', function(){ try{ navigator.clipboard && navigator.clipboard.writeText('+380676099733'); }catch(e){} });
+      });
+
+      // small hero mouse parallax
+      document.querySelector('.hero').addEventListener('mousemove', function(e){
+        const x = (e.clientX - window.innerWidth/2) / (window.innerWidth/2);
+        const y = (e.clientY - window.innerHeight/2) / (window.innerHeight/2);
+        heroBg.style.transform = `translate(${x*6}px, ${y*6}px) scale(1.02)`;
+      });
+
+    });
+  </script>
+</body>
+</html>
